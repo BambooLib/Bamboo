@@ -34,11 +34,13 @@ enum class ConfigFormat(
      *
      * Recognized extensions: `.yml`, `.yaml`
      *
+     * NightConfig's SnakeYAML parser does not preserve comments.
+     *
      * @since 0.1.0
      */
     YAML(
         extensions = setOf("yml", "yaml"),
-        supportsComments = true
+        supportsComments = false
     ),
 
     /**
