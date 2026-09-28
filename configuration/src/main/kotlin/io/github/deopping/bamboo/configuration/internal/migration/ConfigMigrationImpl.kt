@@ -6,5 +6,5 @@ import io.github.deopping.bamboo.configuration.api.migration.ConfigMigrationActi
 internal class ConfigMigrationImpl(
     override val from: Int,
     override val to: Int,
-    internal val action: ConfigMigrationAction
-) : ConfigMigration
+    override val action: ConfigMigrationAction
+) : ConfigMigration, ManagedConfigMigration

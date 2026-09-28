@@ -2,16 +2,17 @@ package io.github.deopping.bamboo.configuration.internal
 
 import io.github.deopping.bamboo.configuration.api.Config
 import io.github.deopping.bamboo.configuration.api.ConfigException
+import io.github.deopping.bamboo.configuration.api.schema.ConfigSchema
 import io.github.deopping.bamboo.configuration.api.schema.ConfigVersioning
 import io.github.deopping.bamboo.configuration.internal.migration.ConfigMigrationImpl
 import io.github.deopping.bamboo.configuration.internal.migration.ConfigMigrationScopeImpl
-import io.github.deopping.bamboo.configuration.internal.schema.ConfigSchemaImpl
+import io.github.deopping.bamboo.configuration.internal.migration.ManagedConfigMigration
 
 internal object ConfigUpdater {
 
     fun update(
         config: Config,
-        schema: ConfigSchemaImpl,
+        schema: ConfigSchema,
         newlyCreated: Boolean
     ) {
         val versioning = schema.versioning
@@ -51,7 +52,7 @@ internal object ConfigUpdater {
 
     private fun updateVersioned(
         config: Config,
-        schema: ConfigSchemaImpl,
+        schema: ConfigSchema,
         versioning: ConfigVersioning,
         newlyCreated: Boolean
     ) {
@@ -71,7 +72,7 @@ internal object ConfigUpdater {
         }
 
         while (currentVersion < targetVersion) {
-            val migration = schema.migrations[currentVersion] as? ConfigMigrationImpl
+            val migration = schema.migrations[currentVersion]
                 ?: throw ConfigException(
                     "No migration exists from configuration version " +
                     "$currentVersion to $targetVersion."
@@ -100,7 +101,11 @@ internal object ConfigUpdater {
                 )
             }
 
-            migration.action.apply(ConfigMigrationScopeImpl(config))
+            if (migration is ManagedConfigMigration) {
+                migration.action.apply(
+                    scope = ConfigMigrationScopeImpl(config)
+                )
+            }
 
             currentVersion = migration.to
         }
@@ -108,7 +113,7 @@ internal object ConfigUpdater {
 
     private fun applySettings(
         config: Config,
-        schema: ConfigSchemaImpl
+        schema: ConfigSchema
     ) {
         schema.settings.values.forEach { setting ->
             if (!config.contains(setting.path)) {
