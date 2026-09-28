@@ -246,12 +246,14 @@ internal class ConfigImpl(
 
     private fun loadInitial() {
         try {
-            val existed = Files.exists(path)
-
             backend.load()
 
-            dirty = !existed
-            fingerprint = FileFingerprint.capture(path, includeContentHash = true)
+            dirty = false
+
+            fingerprint = FileFingerprint.capture(
+                path = path,
+                includeContentHash = true
+            )
         }
         catch (exception: ConfigException) {
             throw exception
