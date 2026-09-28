@@ -3,9 +3,8 @@ package io.github.deopping.bamboo.configuration.internal
 import io.github.deopping.bamboo.configuration.api.Config
 import io.github.deopping.bamboo.configuration.api.ConfigException
 import io.github.deopping.bamboo.configuration.api.ConfigFormat
-import java.nio.file.Files
 import java.nio.file.Path
-import java.util.Optional
+import java.util.*
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
