@@ -4,4 +4,5 @@ plugins {
 
 dependencies {
     api(project(":configuration"))
+    api(project(":plugin"))
 }
