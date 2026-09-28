@@ -1,5 +1,6 @@
 package io.github.deopping.bamboo.configuration
 
+import io.github.deopping.bamboo.configuration.api.ConfigLoadOptions
 import io.github.deopping.bamboo.configuration.api.ConfigManager
 import io.github.deopping.bamboo.configuration.api.schema.ConfigSchema
 import io.github.deopping.bamboo.configuration.api.schema.ConfigSchemaBuilder
@@ -36,6 +37,17 @@ interface ConfigApi {
      * @since 0.1.0
      */
     fun createConfigManager(parentPath: Path? = null): ConfigManager
+
+    /**
+     * Creates a new configuration load options instance.
+     *
+     * The returned options can be used to provide an optional default resource
+     * and/or schema when loading a configuration.
+     *
+     * @return a new [ConfigLoadOptions]
+     * @since 0.1.0
+     */
+    fun createConfigLoadOptions(): ConfigLoadOptions
 
     /**
      * Creates a new configuration schema builder.
