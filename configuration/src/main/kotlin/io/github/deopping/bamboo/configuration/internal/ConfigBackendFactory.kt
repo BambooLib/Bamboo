@@ -1,7 +1,7 @@
 package io.github.deopping.bamboo.configuration.internal
 
 import io.github.deopping.bamboo.configuration.api.ConfigFormat
-import io.github.deopping.bamboo.configuration.backends.NightConfigBackend
+import io.github.deopping.bamboo.configuration.internal.backends.NightConfigBackend
 import java.nio.file.Path
 
 internal object ConfigBackendFactory {

@@ -1,4 +1,4 @@
-package io.github.deopping.bamboo.configuration.backends
+package io.github.deopping.bamboo.configuration.internal.backends
 
 import com.electronwill.nightconfig.core.file.CommentedFileConfig
 import com.electronwill.nightconfig.core.file.FileConfig
