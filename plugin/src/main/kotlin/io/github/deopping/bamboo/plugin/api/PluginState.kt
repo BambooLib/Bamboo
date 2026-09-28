@@ -48,6 +48,12 @@ enum class PluginState {
      * The plugin has been disabled.
      * @since 0.1.0
      */
-    DISABLED
+    DISABLED,
+
+    /**
+     * The plugin failed to load or enable.
+     * @since 0.1.0
+     */
+    FAILED
 
 }
