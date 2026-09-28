@@ -1,6 +1,8 @@
 package io.github.deopping.bamboo.configuration
 
 import io.github.deopping.bamboo.configuration.api.ConfigManager
+import io.github.deopping.bamboo.configuration.api.schema.ConfigSchema
+import io.github.deopping.bamboo.configuration.api.schema.ConfigSchemaBuilder
 import java.nio.file.Path
 
 /**
@@ -34,5 +36,17 @@ interface ConfigApi {
      * @since 0.1.0
      */
     fun createConfigManager(parentPath: Path? = null): ConfigManager
+
+    /**
+     * Creates a new configuration schema builder.
+     *
+     * The returned builder is independent of any configuration manager and
+     * can be used to define settings, validation rules, and migrations before
+     * producing a [ConfigSchema].
+     *
+     * @return a new [ConfigSchemaBuilder]
+     * @since 0.1.0
+     */
+    fun createConfigSchemaBuilder(): ConfigSchemaBuilder
 
 }
