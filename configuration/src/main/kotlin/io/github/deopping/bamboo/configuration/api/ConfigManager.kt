@@ -1,5 +1,6 @@
 package io.github.deopping.bamboo.configuration.api
 
+import io.github.deopping.bamboo.configuration.internal.ConfigLoadOptionsImpl
 import java.lang.AutoCloseable
 import java.nio.file.Path
 
@@ -42,6 +43,31 @@ interface ConfigManager : AutoCloseable {
      * @since 0.1.0
      */
     fun load(path: Path): Config
+
+    /**
+     * Loads and begins managing a configuration file using the supplied options.
+     *
+     * The configuration format is determined from the file extension.
+     *
+     * If the target file does not exist, the configured
+     * [ConfigLoadOptions.resource] may be used to create the initial file
+     * before it is loaded.
+     *
+     * If a [ConfigLoadOptions.schema] is provided, the configuration may be
+     * initialized, validated, or updated according to that schema.
+     *
+     * If the normalized path is already managed by this manager, the existing
+     * configuration is returned and the supplied options are not applied again.
+     *
+     * @param path path to the configuration file
+     * @param options options controlling resource initialization and schema
+     * processing
+     * @return the managed [Config]
+     * @throws ConfigException if the file format cannot be determined, the
+     * configuration cannot be loaded, or initialization/update fails
+     * @since 0.1.0
+     */
+    fun load(path: Path, options: ConfigLoadOptions): Config
 
     /**
      * Stops managing a configuration.
@@ -103,4 +129,37 @@ interface ConfigManager : AutoCloseable {
      */
     override fun close()
 
+}
+
+/**
+ * Loads a configuration using a Kotlin DSL for [ConfigLoadOptions].
+ *
+ * This is a convenience overload for Kotlin applications. It is equivalent
+ * to creating a [ConfigLoadOptions], applying [configure], and passing the
+ * resulting options to [ConfigManager.load].
+ *
+ * Example:
+ * ```kotlin
+ * val config = manager.load(Path.of("config.yml")) {
+ *      resource = ConfigResource.classpath("config.yml")
+ *      schema = configSchema {
+ *          version(1)
+ *      }
+ * }
+ * ```
+ *
+ * @param path path to the configuration file
+ * @param configure configuration options to apply before loading
+ * @return the managed [Config]
+ * @throws ConfigException if the configuration cannot be loaded or initialized
+ * @since 0.1.0
+ */
+fun ConfigManager.load(
+    path: Path,
+    configure: ConfigLoadOptions.() -> Unit
+): Config {
+    return load(
+        path,
+        ConfigLoadOptionsImpl().apply(configure)
+    )
 }
