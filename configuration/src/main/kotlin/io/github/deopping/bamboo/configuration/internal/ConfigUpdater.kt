@@ -2,7 +2,6 @@ package io.github.deopping.bamboo.configuration.internal
 
 import io.github.deopping.bamboo.configuration.api.Config
 import io.github.deopping.bamboo.configuration.api.ConfigException
-import io.github.deopping.bamboo.configuration.api.schema.ConfigSchema
 import io.github.deopping.bamboo.configuration.api.schema.ConfigVersioning
 import io.github.deopping.bamboo.configuration.internal.migration.ConfigMigrationImpl
 import io.github.deopping.bamboo.configuration.internal.migration.ConfigMigrationScopeImpl
