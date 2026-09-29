@@ -17,6 +17,7 @@ rootProject.name = "Bamboo"
 
 include(
     ":configuration",
+    ":database",
     ":plugin",
     ":all"
 )
