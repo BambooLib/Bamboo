@@ -19,6 +19,7 @@ include(
     ":common",
     ":configuration",
     ":database",
+    ":actions",
     ":plugin",
     ":all"
 )
