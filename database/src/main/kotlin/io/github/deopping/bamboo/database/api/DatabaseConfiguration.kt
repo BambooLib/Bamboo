@@ -21,6 +21,22 @@ interface DatabaseConfiguration {
      */
     val type: DatabaseType
 
+    interface Sql : DatabaseConfiguration {
+        val jdbcUrl: String
+        val username: String?
+        val password: String?
+        val properties: Map<String, Any?>
+    }
+
+    interface Mongo : DatabaseConfiguration {
+        val connectionString: String
+        val database: String
+    }
+
+    interface Redis : DatabaseConfiguration {
+        val connectionString: String
+    }
+
     companion object {
 
         /**
@@ -31,7 +47,7 @@ interface DatabaseConfiguration {
          * @since 0.1.0
          */
         @JvmStatic
-        fun sqlite(file: Path): DatabaseConfiguration {
+        fun sqlite(file: Path): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.SQLITE,
                 jdbcUrl = "jdbc:sqlite:${file.toAbsolutePath()}"
@@ -52,7 +68,7 @@ interface DatabaseConfiguration {
             jdbcUrl: String,
             username: String? = null,
             password: String? = null
-        ): DatabaseConfiguration {
+        ): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.H2,
                 jdbcUrl = jdbcUrl,
@@ -75,7 +91,7 @@ interface DatabaseConfiguration {
             jdbcUrl: String,
             username: String,
             password: String
-        ): DatabaseConfiguration {
+        ): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.MYSQL,
                 jdbcUrl = jdbcUrl,
@@ -98,7 +114,7 @@ interface DatabaseConfiguration {
             jdbcUrl: String,
             username: String,
             password: String
-        ): DatabaseConfiguration {
+        ): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.MARIADB,
                 jdbcUrl = jdbcUrl,
@@ -119,7 +135,7 @@ interface DatabaseConfiguration {
         fun mongodb(
             connectionString: String,
             database: String
-        ): DatabaseConfiguration {
+        ): Mongo {
             return MongoDatabaseConfiguration(
                 connectionString = connectionString,
                 database = database
@@ -136,7 +152,7 @@ interface DatabaseConfiguration {
         @JvmStatic
         fun redis(
             connectionString: String
-        ): DatabaseConfiguration {
+        ): Redis {
             return RedisDatabaseConfiguration(
                 connectionString = connectionString
             )

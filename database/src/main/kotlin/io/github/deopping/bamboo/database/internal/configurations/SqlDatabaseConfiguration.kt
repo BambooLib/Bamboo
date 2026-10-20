@@ -6,14 +6,17 @@ import io.github.deopping.bamboo.database.api.DatabaseType
 
 internal data class SqlDatabaseConfiguration(
     override val type: DatabaseType,
-    val jdbcUrl: String,
-    val username: String? = null,
-    val password: String? = null,
-    val properties: Map<String, Any?> = emptyMap()
-) : DatabaseConfiguration {
+    override val jdbcUrl: String,
+    override val username: String? = null,
+    override val password: String? = null,
+    override val properties: Map<String, Any?> = emptyMap()
+) : DatabaseConfiguration.Sql {
 
     init {
         require(type.family == DatabaseFamily.SQL)
     }
+
+    override fun toString(): String =
+        "SqlDatabaseConfiguration(type=$type, connectionDetails=<redacted>)"
 
 }

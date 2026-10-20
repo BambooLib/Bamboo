@@ -6,4 +6,15 @@ val hikariVersion = providers.gradleProperty("hikariVersion").get()
 
 dependencies {
     implementation("com.zaxxer:HikariCP:$hikariVersion")
+
+    testImplementation(kotlin("test"))
+    testRuntimeOnly("org.slf4j:slf4j-simple:2.0.20")
+    testRuntimeOnly("org.xerial:sqlite-jdbc:3.53.4.0")
+    testRuntimeOnly("com.h2database:h2:2.5.252")
+}
+
+tasks.test {
+    useJUnitPlatform()
+
+    jvmArgs("--enable-native-access=ALL-UNNAMED")
 }

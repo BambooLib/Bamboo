@@ -5,13 +5,16 @@ import io.github.deopping.bamboo.database.api.DatabaseFamily
 import io.github.deopping.bamboo.database.api.DatabaseType
 
 internal data class RedisDatabaseConfiguration(
-    val connectionString: String
-) : DatabaseConfiguration {
+    override val connectionString: String
+) : DatabaseConfiguration.Redis {
 
     override val type: DatabaseType = DatabaseType.REDIS
 
     init {
         require(type.family == DatabaseFamily.KEY_VALUE)
     }
+
+    override fun toString(): String =
+        "RedisDatabaseConfiguration(type=$type, connectionDetails=<redacted>)"
 
 }

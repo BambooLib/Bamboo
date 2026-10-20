@@ -9,7 +9,7 @@ import java.sql.Connection
  * @author DeOpping
  * @since 0.1.0
  */
-interface SqlTransactionAction<T> {
+fun interface SqlTransactionAction<T> {
 
     /**
      * Executes the transaction.

@@ -4,12 +4,14 @@ import io.github.deopping.bamboo.database.api.schema.DatabaseSchema
 import java.lang.AutoCloseable
 
 /**
- * Manages Bamboo database connections.
+ * Manages Bamboo database connections and their associated resources.
  *
- * A database manager owns all databases created through it. Database names
- * identify logical databases within the manager and allow multiple plugins
- * or systems to share a common database service without creating duplicate
- * connections.
+ * A database manager owns the database it creates. Database names identify
+ * logical databases within the manager, allowing multiple components to share
+ * a managed database instead of opening duplicate connections.
+ *
+ * Closing the manager closes all databases it manages and releases their
+ * associated resources.
  *
  * @author DeOpping
  * @since 0.1.0
@@ -17,44 +19,63 @@ import java.lang.AutoCloseable
 interface DatabaseManager : AutoCloseable {
 
     /**
-     * Opens and manages a database.
+     * Opens or retrieves a managed database.
      *
-     * If a database with the supplied name is already managed, the existing
-     * database is returned and the supplied configuration is ignored.
+     * The database configuration determines the backend and connection
+     * settings. When a schema is provided, its migrations are applied as
+     * part of database initialization.
      *
-     * @param name logical database name
-     * @param configuration database connection configuration
-     * @param schema optional database schema and migration definition
+     * If a database with the specified name is already managed, its
+     * existing instance is returned. The supplied configuration and schema
+     * are not applied to the existing instance.
+     *
+     * @param name logical name used to identify the managed database
+     * @param configuration configuration describing the database connection
+     * @param schema optional schema definition and migration history
      * @return the managed database
-     * @throws DatabaseException if the database cannot be created or connected
+     * @throws IllegalArgumentException if the name is invalid
+     * @throws DatabaseException if the database cannot be created, connected,
+     * or initialized
      * @since 0.1.0
      */
     fun connect(
         name: String,
         configuration: DatabaseConfiguration,
-        schema: DatabaseSchema?
+        schema: DatabaseSchema? = null
     ): Database
 
     /**
-     * Returns a managed database without creating a new connection.
+     * Retrieves a database managed under the specified name.
      *
-     * @param name logical database name
-     * @return managed database, or `null` when none exists
+     * This method does not create a connection or attempt to reconnect
+     * a database.
+     *
+     * @param name logical name of the database
+     * @return the managed database, or `null` if no database is managed
+     * under that name
      * @since 0.1.0
      */
     fun get(name: String): Database?
 
     /**
-     * Closes and removes a managed database.
+     * Closes and removes a database from this manager.
      *
-     * @param name logical database name
+     * If no database is managed under the specified name, this method
+     * has no effect.
+     *
+     * @param name logical name of the database to disconnect
+     * @throws DatabaseException if the database cannot be closed cleanly
      * @since 0.1.0
      */
     fun disconnect(name: String)
 
     /**
-     * Closes all managed databases.
+     * Closes all managed databases and releases their resources.
      *
+     * Once closed, the manager must not accept new connections. Repeated
+     * calls should have no additional effect.
+     *
+     * @throws DatabaseException if one or more databases cannot be closed
      * @since 0.1.0
      */
     override fun close()
