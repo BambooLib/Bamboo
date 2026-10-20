@@ -58,6 +58,23 @@ interface ConfigSchemaBuilder {
     ): SettingBuilder<T>
 
     /**
+     * Defines a comment intended to appear at the top of the configuration file.
+     *
+     * Since the underlying configuration format may not support file-level
+     * comments, the comment is associated with the setting identified by [anchorPath]
+     * instead. This allows the comment to appear before the first setting in the file.
+     *
+     * @param anchorPath configuration path of the setting associated with
+     * the root comment
+     * @param comment the comment to display at the top of the configuration file
+     * @since 0.1.0
+     */
+    fun rootComment(
+        anchorPath: String,
+        comment: String
+    )
+
+    /**
      * Adds a migration to the schema.
      *
      * This method is the Java-friendly form of the Kotlin [migrate] DSL.

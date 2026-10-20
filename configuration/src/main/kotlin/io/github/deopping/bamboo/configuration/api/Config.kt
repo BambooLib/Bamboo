@@ -163,6 +163,23 @@ interface Config : AutoCloseable {
     fun getAsStringList(path: String): List<String>
 
     /**
+     * Retrieves the entries of a configuration section.
+     *
+     * The returned map contains the keys and values directly within the
+     * specified section. Nested sections are represented as maps and are not
+     * flattened into dot-separated paths.
+     *
+     * If the specified path does not exist or does not refer to a section,
+     * an empty map is returned.
+     *
+     * @param path dot-separated path to the configuration section
+     * @return a map containing the section's entries, or an empty map if the
+     * path does not refer to a section
+     * @since 0.1.0
+     */
+    fun getSection(path: String): Map<String, Any?>
+
+    /**
      * Sets a value at the specified path.
      *
      * The change is kept in memory and marks the configuration as dirty

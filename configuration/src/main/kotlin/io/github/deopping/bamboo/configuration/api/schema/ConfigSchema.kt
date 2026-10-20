@@ -35,4 +35,27 @@ interface ConfigSchema {
      */
     val migrations: Map<Int, ConfigMigration>
 
+    /**
+     * The configuration path of the setting used to anchor the root comment,
+     * or `null` if no root comment is defined.
+     *
+     * Because the underlying configuration format may not support file-level
+     * comments, the root comment is associated with this setting instead.
+     *
+     * @since 0.1.0
+     */
+    val rootCommentAnchor: String?
+
+    /**
+     * The comment intended to appear at the top of the configuration file,
+     * or `null` if no root comment is defined.
+     *
+     * When the configuration format does not support file-level comments,
+     * this comment is associated with the setting identified by
+     * [rootCommentAnchor].
+     *
+     * @since 0.1.0
+     */
+    val rootComment: String?
+
 }

@@ -1,5 +1,6 @@
 package io.github.deopping.bamboo.configuration.internal.backends
 
+import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.core.file.CommentedFileConfig
 import com.electronwill.nightconfig.core.file.FileConfig
 import com.electronwill.nightconfig.hocon.HoconFormat
@@ -57,6 +58,15 @@ internal class NightConfigBackend(
         when (val config = config) {
             is CommentedFileConfig -> config.setComment(path, comment)
             else -> throw UnsupportedOperationException("Comments are not supported by $format.")
+        }
+    }
+
+    override fun getSection(path: List<String>): Map<String, Any?> {
+        val section = config.get<Any?>(path) as? Config
+            ?: return emptyMap()
+
+        return section.entrySet().associate { entry ->
+            entry.key to entry.getOrElse<Any?>(null)
         }
     }
 

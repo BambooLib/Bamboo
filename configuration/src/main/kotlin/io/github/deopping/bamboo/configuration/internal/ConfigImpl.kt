@@ -113,6 +113,13 @@ internal class ConfigImpl(
             .map { it?.toString() ?: "" }
     }
 
+    override fun getSection(path: String): Map<String, Any?> {
+        return lock.read {
+            ensureOpen()
+            backend.getSection(ConfigPath.parse(path))
+        }
+    }
+
     override fun set(path: String, value: Any?) {
         lock.write {
             ensureOpen()

@@ -8,5 +8,7 @@ import io.github.deopping.bamboo.configuration.api.schema.ConfigVersioning
 internal class ConfigSchemaImpl(
     override val versioning: ConfigVersioning?,
     override val settings: Map<String, ConfigSetting>,
-    override val migrations: Map<Int, ConfigMigration>
+    override val migrations: Map<Int, ConfigMigration>,
+    override val rootComment: String?,
+    override val rootCommentAnchor: String?
 ) : ConfigSchema

@@ -20,6 +20,8 @@ internal interface ConfigBackend {
 
     fun setComment(path: List<String>, comment: String?)
 
+    fun getSection(path: List<String>): Map<String, Any?>
+
     fun load()
 
     fun save()

@@ -17,6 +17,9 @@ internal class ConfigSchemaBuilderImpl : ConfigSchemaBuilder {
 
     private var versioning: ConfigVersioning? = null
 
+    private var rootCommentAnchor: String? = null
+    private var rootComment: String? = null
+
     override fun version(version: Int, path: String) {
         require(version >= 0) {
             "Configuration version path cannot be negative."
@@ -66,6 +69,22 @@ internal class ConfigSchemaBuilderImpl : ConfigSchemaBuilder {
         settings[path] = builder
 
         return builder
+    }
+
+    override fun rootComment(
+        anchorPath: String,
+        comment: String
+    ) {
+        require(anchorPath.isNotBlank()) {
+            "Root comment anchor cannot be empty."
+        }
+
+        require(comment.isNotBlank()) {
+            "Root comment cannot be empty."
+        }
+
+        rootCommentAnchor = anchorPath
+        rootComment = comment
     }
 
     override fun migration(
@@ -119,7 +138,9 @@ internal class ConfigSchemaBuilderImpl : ConfigSchemaBuilder {
         return ConfigSchemaImpl(
             versioning = versioning,
             settings = builtSettings,
-            migrations = builtMigrations
+            migrations = builtMigrations,
+            rootCommentAnchor = rootCommentAnchor,
+            rootComment = rootComment
         )
     }
 
