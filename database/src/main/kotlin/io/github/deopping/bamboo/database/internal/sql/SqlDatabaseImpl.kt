@@ -7,6 +7,7 @@ import io.github.deopping.bamboo.database.api.DatabaseState
 import io.github.deopping.bamboo.database.api.DatabaseType
 import io.github.deopping.bamboo.database.api.sql.SqlDatabase
 import io.github.deopping.bamboo.database.api.sql.SqlTransactionAction
+import io.github.deopping.bamboo.database.internal.DatabaseFailures
 import java.sql.SQLException
 import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
@@ -68,7 +69,7 @@ internal class SqlDatabaseImpl(
                     throw failure
                 }
 
-                throw DatabaseException(
+                throw DatabaseFailures.create(
                     "Failed to initialize SQL database '$name'.",
                     failure
                 )
@@ -162,7 +163,7 @@ internal class SqlDatabaseImpl(
             } catch (failure: Exception) {
                 currentState = DatabaseState.FAILED
 
-                throw DatabaseException(
+                throw DatabaseFailures.create(
                     "Failed to close SQL database '$name'.",
                     failure
                 )
@@ -175,7 +176,7 @@ internal class SqlDatabaseImpl(
         action: () -> T
     ): T = lifecycleLock.read {
         if (currentState != DatabaseState.CONNECTED) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Cannot $operation on database '$name': " +
                 "its current state is $currentState."
             )
@@ -186,7 +187,7 @@ internal class SqlDatabaseImpl(
         } catch (failure: DatabaseException) {
             throw failure
         } catch (failure: Exception) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Failed to $operation on SQL database '$name'.",
                 failure
             )

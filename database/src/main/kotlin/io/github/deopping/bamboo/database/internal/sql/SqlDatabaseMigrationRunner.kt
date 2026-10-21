@@ -1,9 +1,9 @@
 package io.github.deopping.bamboo.database.internal.sql
 
-import io.github.deopping.bamboo.database.api.DatabaseException
 import io.github.deopping.bamboo.database.api.migration.DatabaseMigration
 import io.github.deopping.bamboo.database.api.schema.DatabaseSchema
 import io.github.deopping.bamboo.database.api.sql.SqlDatabase
+import io.github.deopping.bamboo.database.internal.DatabaseFailures
 import io.github.deopping.bamboo.database.internal.migration.ManagedDatabaseMigration
 import java.sql.Connection
 import java.sql.SQLException
@@ -26,7 +26,7 @@ internal object SqlDatabaseMigrationRunner {
         validateSchema(schema)
 
         if (database.name.length > 255) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Database name exceeds the 255-character schema tracking limit."
             )
         }
@@ -35,12 +35,12 @@ internal object SqlDatabaseMigrationRunner {
         ensureVersionRecord(database)
 
         var currentVersion = readVersion(database, database.name)
-            ?: throw DatabaseException(
+            ?: throw DatabaseFailures.create(
                 "Schema version record could not be initialized."
             )
 
         if (currentVersion > schema.version) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Database '${database.name}' is at schema version " +
                 "$currentVersion, which is newer than the configured " +
                 "version ${schema.version}. Automatic downgrades are not supported."
@@ -49,13 +49,13 @@ internal object SqlDatabaseMigrationRunner {
 
         while (currentVersion < schema.version) {
             val migration = schema.migrations[currentVersion]
-                ?: throw DatabaseException(
+                ?: throw DatabaseFailures.create(
                     "No migration exists from schema version $currentVersion to " +
                     "${schema.version} for database '${database.name}'."
                 )
 
             val managedMigration = migration as? ManagedDatabaseMigration
-                ?: throw DatabaseException(
+                ?: throw DatabaseFailures.create(
                     "Migration ${migration.from} -> ${migration.to} was not " +
                     "created by Bamboo's schema builder."
                 )
@@ -71,7 +71,7 @@ internal object SqlDatabaseMigrationRunner {
 
     private fun validateSchema(schema: DatabaseSchema) {
         if (schema.version < 0) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Database schema version cannot be negative."
             )
         }
@@ -82,7 +82,7 @@ internal object SqlDatabaseMigrationRunner {
                 migration.to <= migration.from ||
                 migration.to > schema.version
             ) {
-                throw DatabaseException(
+                throw DatabaseFailures.create(
                     "Invalid database migration ${migration.from} -> ${migration.to} in " +
                     "schema version ${schema.version}."
                 )
@@ -136,12 +136,12 @@ internal object SqlDatabaseMigrationRunner {
             }
 
             val storedVersion = readVersion(connection, database.name)
-                ?: throw DatabaseException(
+                ?: throw DatabaseFailures.create(
                     "Schema version record disappeared for '${database.name}'."
                 )
 
             if (storedVersion != expectedVersion) {
-                throw DatabaseException(
+                throw DatabaseFailures.create(
                     "Schema version for '${database.name}' changed during" +
                     "migration. Expected $expectedVersion but found $storedVersion."
                 )
@@ -168,7 +168,7 @@ internal object SqlDatabaseMigrationRunner {
             }
 
             if (updatedRows != 1) {
-                throw DatabaseException(
+                throw DatabaseFailures.create(
                     "Failed to record schema version ${migration.to} " +
                     "for database '${database.name}'."
                 )

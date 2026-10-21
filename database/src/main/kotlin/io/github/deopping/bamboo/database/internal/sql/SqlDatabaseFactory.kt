@@ -6,6 +6,7 @@ import io.github.deopping.bamboo.database.api.DatabaseException
 import io.github.deopping.bamboo.database.api.DatabaseFamily
 import io.github.deopping.bamboo.database.api.schema.DatabaseSchema
 import io.github.deopping.bamboo.database.internal.DatabaseFactory
+import io.github.deopping.bamboo.database.internal.DatabaseFailures
 
 internal class SqlDatabaseFactory : DatabaseFactory {
 
@@ -19,12 +20,12 @@ internal class SqlDatabaseFactory : DatabaseFactory {
         }
 
         val sqlConfiguration = configuration as? DatabaseConfiguration.Sql
-            ?: throw DatabaseException(
+            ?: throw DatabaseFailures.create(
                 "Configuration for database '$name' is not an SQL configuration."
             )
 
         if (sqlConfiguration.type.family != DatabaseFamily.SQL) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Database '$name' has a non-SQL database type."
             )
         }
@@ -32,7 +33,7 @@ internal class SqlDatabaseFactory : DatabaseFactory {
         val dataSource = try {
             SqlDataSourceFactory.create(name, sqlConfiguration)
         } catch (failure: Exception) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Failed to create the SQL datasource for database '$name'.",
                 failure
             )
@@ -60,7 +61,7 @@ internal class SqlDatabaseFactory : DatabaseFactory {
             when (failure) {
                 is Error -> throw failure
                 is DatabaseException -> throw failure
-                else -> throw DatabaseException(
+                else -> throw DatabaseFailures.create(
                     "Failed to apply the schema to database '$name'.",
                     failure
                 )

@@ -58,7 +58,7 @@ internal class DatabaseManagerImpl(
             }
 
             if (!registered) {
-                val failure = DatabaseException(
+                val failure = DatabaseFailures.create(
                     "Database manager was closed while " +
                             "database '$name' was being initialized."
                 )
@@ -143,7 +143,7 @@ internal class DatabaseManagerImpl(
                 }
 
                 if (failures.isNotEmpty()) {
-                    val exception = DatabaseException(
+                    val exception = DatabaseFailures.create(
                         "Failed to close ${failures.size} of " +
                         "${managedDatabases.size} managed database(s)."
                     )
@@ -171,14 +171,14 @@ internal class DatabaseManagerImpl(
         } catch (failure: DatabaseException) {
             throw failure
         } catch (failure: Exception) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Failed to initialize database '$name'.",
                 failure
             )
         }
 
         if (database.name != name || database.type != configuration.type) {
-            val failure = DatabaseException(
+            val failure = DatabaseFailures.create(
                 "Database factory returned an instance whose name or " +
                 "type does not match the requested database '$name'."
             )
@@ -197,7 +197,7 @@ internal class DatabaseManagerImpl(
         try {
             database.close()
         } catch (failure: Exception) {
-            throw DatabaseException(
+            throw DatabaseFailures.create(
                 "Failed to close database '$name'.",
                 failure
             )
