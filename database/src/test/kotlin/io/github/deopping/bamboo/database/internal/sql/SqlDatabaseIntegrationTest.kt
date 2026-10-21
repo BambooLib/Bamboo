@@ -1,10 +1,12 @@
 package io.github.deopping.bamboo.database.internal.sql
 
+import com.zaxxer.hikari.HikariDataSource
 import io.github.deopping.bamboo.database.api.DatabaseConfiguration
 import io.github.deopping.bamboo.database.api.DatabaseException
 import io.github.deopping.bamboo.database.api.DatabaseState
 import io.github.deopping.bamboo.database.api.DatabaseType
 import io.github.deopping.bamboo.database.api.sql.SqlDatabase
+import io.github.deopping.bamboo.database.api.sql.SqlPoolSettings
 import io.github.deopping.bamboo.database.internal.DatabaseManagerImpl
 import io.github.deopping.bamboo.database.internal.configurations.SqlDatabaseConfiguration
 import org.junit.jupiter.api.Assertions.assertFalse
@@ -43,6 +45,37 @@ class SqlDatabaseIntegrationTest {
             name = databaseName,
             configuration = configuration
         )
+    }
+
+    @Test
+    fun `custom pool settings are applied`() {
+        val databaseName = "bamboo_pool_test"
+
+        val configuration = DatabaseConfiguration.h2(
+            jdbcUrl = "jdbc:h2:mem:$databaseName",
+            poolSettings = SqlPoolSettings(
+                maximumPoolSize = 3,
+                minimumIdle = 1,
+                connectionTimeoutMillis = 10_000L,
+                validationTimeoutMillis = 2_000L
+            )
+        )
+
+        val manager = DatabaseManagerImpl(SqlDatabaseFactory())
+
+        manager.use { manager ->
+            val database = manager.connect(
+                name = databaseName,
+                configuration = configuration
+            ) as SqlDatabase
+
+            val dataSource = database.dataSource as HikariDataSource
+
+            assertEquals(3, dataSource.maximumPoolSize)
+            assertEquals(1, dataSource.minimumIdle)
+            assertEquals(10_000L, dataSource.connectionTimeout)
+            assertEquals(2_000L, dataSource.validationTimeout)
+        }
     }
 
     private fun exerciseDatabase(

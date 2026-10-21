@@ -1,5 +1,6 @@
 package io.github.deopping.bamboo.database.api
 
+import io.github.deopping.bamboo.database.api.sql.SqlPoolSettings
 import io.github.deopping.bamboo.database.internal.configurations.MongoDatabaseConfiguration
 import io.github.deopping.bamboo.database.internal.configurations.RedisDatabaseConfiguration
 import io.github.deopping.bamboo.database.internal.configurations.SqlDatabaseConfiguration
@@ -26,6 +27,8 @@ interface DatabaseConfiguration {
         val username: String?
         val password: String?
         val properties: Map<String, Any?>
+
+        val poolSettings: SqlPoolSettings
     }
 
     interface Mongo : DatabaseConfiguration {
@@ -43,14 +46,20 @@ interface DatabaseConfiguration {
          * Creates an SQLite configuration.
          *
          * @param file SQLite database file
+         * @param poolSettings the connection pool settings
          * @return SQLite configuration
          * @since 0.1.0
          */
         @JvmStatic
-        fun sqlite(file: Path): Sql {
+        @JvmOverloads
+        fun sqlite(
+            file: Path,
+            poolSettings: SqlPoolSettings = SqlPoolSettings()
+        ): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.SQLITE,
-                jdbcUrl = "jdbc:sqlite:${file.toAbsolutePath()}"
+                jdbcUrl = "jdbc:sqlite:${file.toAbsolutePath()}",
+                poolSettings = poolSettings
             )
         }
 
@@ -60,20 +69,24 @@ interface DatabaseConfiguration {
          * @param jdbcUrl H2 JDBC URL
          * @param username optional database username
          * @param password optional database password
+         * @param poolSettings the connection pool settings
          * @return H2 configuration
          * @since 0.1.0
          */
         @JvmStatic
+        @JvmOverloads
         fun h2(
             jdbcUrl: String,
             username: String? = null,
-            password: String? = null
+            password: String? = null,
+            poolSettings: SqlPoolSettings = SqlPoolSettings()
         ): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.H2,
                 jdbcUrl = jdbcUrl,
                 username = username,
-                password = password
+                password = password,
+                poolSettings = poolSettings
             )
         }
 
@@ -83,20 +96,24 @@ interface DatabaseConfiguration {
          * @param jdbcUrl MySQL JDBC URL
          * @param username database username
          * @param password database password
+         * @param poolSettings the connection pool settings
          * @return MySQL configuration
          * @since 0.1.0
          */
         @JvmStatic
+        @JvmOverloads
         fun mysql(
             jdbcUrl: String,
             username: String,
-            password: String
+            password: String,
+            poolSettings: SqlPoolSettings = SqlPoolSettings()
         ): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.MYSQL,
                 jdbcUrl = jdbcUrl,
                 username = username,
-                password = password
+                password = password,
+                poolSettings = poolSettings
             )
         }
 
@@ -106,20 +123,24 @@ interface DatabaseConfiguration {
          * @param jdbcUrl MariaDB JDBC URL
          * @param username database username
          * @param password database password
+         * @param poolSettings the connection pool settings
          * @return MariaDB configuration
          * @since 0.1.0
          */
         @JvmStatic
+        @JvmOverloads
         fun mariadb(
             jdbcUrl: String,
             username: String,
-            password: String
+            password: String,
+            poolSettings: SqlPoolSettings = SqlPoolSettings()
         ): Sql {
             return SqlDatabaseConfiguration(
                 type = DatabaseType.MARIADB,
                 jdbcUrl = jdbcUrl,
                 username = username,
-                password = password
+                password = password,
+                poolSettings = poolSettings
             )
         }
 
