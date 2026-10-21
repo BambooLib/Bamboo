@@ -29,15 +29,6 @@ internal class SqlDatabaseFactory : DatabaseFactory {
             )
         }
 
-        // TODO Database Migrations are currently not implemented.
-        if (schema != null) {
-            throw DatabaseException(
-                "SQL schema migrations are not implemented yet. " +
-                "Connect without a schema until migration execution " +
-                "is available."
-            )
-        }
-
         val dataSource = try {
             SqlDataSourceFactory.create(name, sqlConfiguration)
         } catch (failure: Exception) {
@@ -54,6 +45,27 @@ internal class SqlDatabaseFactory : DatabaseFactory {
         )
 
         database.initialize()
+
+        try {
+            if (schema != null) {
+                SqlDatabaseMigrationRunner.apply(database, schema)
+            }
+        } catch (failure: Throwable) {
+            try {
+                database.close()
+            } catch (closeFailure: Throwable) {
+                failure.addSuppressed(closeFailure)
+            }
+
+            when (failure) {
+                is Error -> throw failure
+                is DatabaseException -> throw failure
+                else -> throw DatabaseException(
+                    "Failed to apply the schema to database '$name'.",
+                    failure
+                )
+            }
+        }
 
         return database
     }
