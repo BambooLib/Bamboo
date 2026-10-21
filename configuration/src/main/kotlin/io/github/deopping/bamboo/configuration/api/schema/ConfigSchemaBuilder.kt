@@ -133,18 +133,3 @@ fun ConfigSchemaBuilder.migrate(
 ) {
     migration(from, to) { scope -> configure(scope) }
 }
-
-/**
- * Creates a configuration schema using Kotlin's DSL syntax.
- *
- * @param configure schema builder configuration
- * @return the constructed [ConfigSchema]
- * @since 0.1.0
- */
-fun ConfigApi.configSchema(
-    configure: ConfigSchemaBuilder.() -> Unit
-): ConfigSchema {
-    return createConfigSchemaBuilder()
-        .apply(configure)
-        .build()
-}
