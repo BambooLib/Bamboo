@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
     api(project(":common"))
+    api(project(":reflection"))
     api(project(":configuration"))
     api(project(":database"))
     api(project(":packets"))
