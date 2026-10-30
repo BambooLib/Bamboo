@@ -11,3 +11,7 @@ kotlin {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
+
+tasks.named("build") {
+    dependsOn("ktlintCheck")
+}
