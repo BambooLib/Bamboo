@@ -6,6 +6,7 @@ plugins {
 
 kotlin {
     jvmToolchain(25)
+    explicitApi()
 }
 
 tasks.withType<Test>().configureEach {
