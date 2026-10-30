@@ -20,3 +20,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Bamboo"
+
+include(
+    ":plugin"
+)
