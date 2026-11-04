@@ -22,5 +22,6 @@ dependencyResolutionManagement {
 rootProject.name = "Bamboo"
 
 include(
+    ":configuration",
     ":plugin"
 )
