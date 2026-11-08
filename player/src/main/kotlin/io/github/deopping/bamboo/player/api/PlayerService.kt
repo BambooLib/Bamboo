@@ -10,7 +10,6 @@ import java.util.UUID
  * @since 1.0.0
  */
 public interface PlayerService {
-
     /**
      * Gets an online player by their unique identifier.
      *
@@ -27,5 +26,4 @@ public interface PlayerService {
      * @since 1.0.0
      */
     public fun getOnlinePlayers(): Collection<Player>
-
 }

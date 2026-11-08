@@ -9,7 +9,6 @@ import java.util.UUID
  * @since 1.0.0
  */
 public interface Player {
-
     /**
      * Gets the player's unique identifier.
      *
@@ -33,5 +32,4 @@ public interface Player {
      * @since 1.0.0
      */
     public val isOnline: Boolean
-
 }
