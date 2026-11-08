@@ -7,9 +7,15 @@ package io.github.deopping.bamboo.packet.api
  * @since 1.0.0
  */
 public enum class PacketSendResult {
-    /** The packet was transmitted through the platform's packet transport. */
+    /**
+     * The packet was transmitted through the platform's packet transport.
+     * @since 1.0.0
+     */
     SENT,
 
-    /** The packet was canceled by a packet send event. */
+    /**
+     * The packet was canceled by a packet send event.
+     * @since 1.0.0
+     */
     CANCELED,
 }
