@@ -26,5 +26,6 @@ include(
     ":configuration",
     ":player",
     ":event",
+    ":packet",
     ":plugin"
 )
