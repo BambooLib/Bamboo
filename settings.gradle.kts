@@ -25,5 +25,6 @@ include(
     ":reflection",
     ":configuration",
     ":player",
+    ":event",
     ":plugin"
 )
