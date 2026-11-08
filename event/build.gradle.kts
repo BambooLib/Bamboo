@@ -6,7 +6,7 @@ group = rootProject.group
 version = rootProject.version
 
 dependencies {
-    api(project(":reflection"))
+    implementation(project(":reflection"))
     testImplementation(libs.junit.jupiter)
     testRuntimeOnly(libs.junit.platform.launcher)
 }
