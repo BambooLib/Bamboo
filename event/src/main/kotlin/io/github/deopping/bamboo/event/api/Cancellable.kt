@@ -6,7 +6,7 @@ package io.github.deopping.bamboo.event.api
  * @author DeOpping
  * @since 1.0.0
  */
-public interface CancellableEvent : Event {
+public interface Cancellable {
     /**
      * Whether this event has been canceled.
      *

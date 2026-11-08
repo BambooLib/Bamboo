@@ -1,6 +1,7 @@
 package io.github.deopping.bamboo.event.internal
 
-import io.github.deopping.bamboo.event.api.CancellableEvent
+import io.github.deopping.bamboo.event.api.Cancellable
+import io.github.deopping.bamboo.event.api.Event
 import io.github.deopping.bamboo.event.api.EventHandler
 import io.github.deopping.bamboo.event.api.EventListener
 import io.github.deopping.bamboo.event.api.EventManager
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
 private class EventManagerDispatchTest {
-    private class TestEvent : CancellableEvent {
+    private class TestEvent : Event, Cancellable {
         override var isCanceled: Boolean = false
     }
 

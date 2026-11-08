@@ -1,6 +1,6 @@
 package io.github.deopping.bamboo.event.internal
 
-import io.github.deopping.bamboo.event.api.CancellableEvent
+import io.github.deopping.bamboo.event.api.Cancellable
 import io.github.deopping.bamboo.event.api.Event
 import io.github.deopping.bamboo.event.api.EventExceptionHandler
 import io.github.deopping.bamboo.event.api.EventHandler
@@ -84,7 +84,7 @@ internal class DefaultEventManager(
                 }
             }
 
-        val cancellableEvent = event as? CancellableEvent
+        val cancellableEvent = event as? Cancellable
 
         matchingHandlers.forEach { handler ->
             if (handler.ignoreCanceled && cancellableEvent?.isCanceled == true) {
