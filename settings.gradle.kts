@@ -22,6 +22,7 @@ dependencyResolutionManagement {
 rootProject.name = "Bamboo"
 
 include(
+    ":common",
     ":reflection",
     ":configuration",
     ":geometry",
