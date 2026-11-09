@@ -1,6 +1,7 @@
 package io.github.deopping.bamboo.geometry.internal
 
 import kotlin.math.abs
+import kotlin.math.floor
 import kotlin.math.sqrt
 
 /**
@@ -89,4 +90,30 @@ internal object GeometryMath {
                 scaledY * scaledY +
                 scaledZ * scaledZ,
         )
+
+    /**
+     * Converts a finite coordinate to its containing block coordinate.
+     *
+     * The coordinate is rounded down rather than truncated toward zero.
+     *
+     * @param value the coordinate to convert
+     * @param name the descriptive name of the coordinate
+     * @return the floored block coordinate
+     * @throws IllegalArgumentException if the value is non-finite or outside the Int range
+     * @since 1.0.0
+     */
+    internal fun floorToInt(
+        value: Double,
+        name: String,
+    ): Int {
+        requireFinite(value, name)
+
+        val floored = floor(value)
+
+        require(floored >= Int.MIN_VALUE.toDouble() && floored <= Int.MAX_VALUE.toDouble()) {
+            "$name is outside the Int coordinate range."
+        }
+
+        return floored.toInt()
+    }
 }
