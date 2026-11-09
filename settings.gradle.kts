@@ -24,6 +24,7 @@ rootProject.name = "Bamboo"
 include(
     ":reflection",
     ":configuration",
+    ":geometry",
     ":player",
     ":event",
     ":packet",
