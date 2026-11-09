@@ -32,3 +32,6 @@ jobs:
 
       - name: Build
         run: ./gradlew build
+
+      - name: Publish to Maven Local
+        run: ./gradlew publishToMavenLocal
