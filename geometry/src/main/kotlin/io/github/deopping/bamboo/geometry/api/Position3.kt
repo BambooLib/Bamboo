@@ -15,10 +15,16 @@ public data class Position3(
     override val x: Double,
     override val y: Double,
     override val z: Double,
-) : Position3Like {
+) : Position3Like<Position3> {
     init {
         GeometryMath.requireFinite3(x, y, z, "coordinate")
     }
+
+    override fun createPosition(
+        x: Double,
+        y: Double,
+        z: Double,
+    ): Position3 = Position3(x, y, z)
 
     /**
      * Converts this position into a mutable position.
