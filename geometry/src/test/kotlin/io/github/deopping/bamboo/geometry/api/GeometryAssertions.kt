@@ -15,8 +15,8 @@ internal fun assertVectorEquals(
 }
 
 internal fun assertPositionEquals(
-    expected: Position3Like,
-    actual: Position3Like,
+    expected: Position3Like<*>,
+    actual: Position3Like<*>,
     delta: Double = GEOMETRY_EPSILON,
 ) {
     assertEquals(expected.x, actual.x, delta, "X component")

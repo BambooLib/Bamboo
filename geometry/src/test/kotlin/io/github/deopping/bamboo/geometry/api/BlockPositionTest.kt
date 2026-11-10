@@ -127,10 +127,16 @@ private class BlockPositionTest {
     @Test
     fun `rejects non-finite continuous coordinates`() {
         val invalidPosition =
-            object : Position3Like {
+            object : Position3Like<Position3> {
                 override val x: Double = Double.POSITIVE_INFINITY
                 override val y: Double = 0.0
                 override val z: Double = 0.0
+
+                override fun createPosition(
+                    x: Double,
+                    y: Double,
+                    z: Double,
+                ): Position3 = Position3(x, y, z)
             }
 
         assertThrows<IllegalArgumentException> {

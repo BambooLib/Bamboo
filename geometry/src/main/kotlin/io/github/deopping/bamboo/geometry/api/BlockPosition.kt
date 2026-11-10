@@ -50,7 +50,7 @@ public data class BlockPosition(
          * or outside the Int range after flooring
          * @since 1.0.0
          */
-        public fun fromPosition(position: Position3Like): BlockPosition =
+        public fun fromPosition(position: Position3Like<*>): BlockPosition =
             BlockPosition(
                 GeometryMath.floorToInt(position.x, "X coordinate"),
                 GeometryMath.floorToInt(position.y, "Y coordinate"),

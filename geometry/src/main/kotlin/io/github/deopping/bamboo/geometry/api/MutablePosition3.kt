@@ -14,7 +14,7 @@ public class MutablePosition3(
     x: Double,
     y: Double,
     z: Double,
-) : Position3Like {
+) : Position3Like<Position3> {
     private var xCoordinate: Double = x
     private var yCoordinate: Double = y
     private var zCoordinate: Double = z
@@ -56,6 +56,12 @@ public class MutablePosition3(
         GeometryMath.requireFinite3(x, y, z, "coordinate")
     }
 
+    override fun createPosition(
+        x: Double,
+        y: Double,
+        z: Double,
+    ): Position3 = Position3(x, y, z)
+
     /**
      * Replaces all position coordinates.
      *
@@ -88,7 +94,7 @@ public class MutablePosition3(
      * @return this mutable position
      * @since 1.0.0
      */
-    public fun set(other: Position3Like): MutablePosition3 = set(other.x, other.y, other.z)
+    public fun set(other: Position3Like<*>): MutablePosition3 = set(other.x, other.y, other.z)
 
     /**
      * Moves this position by a displacement in place.
@@ -126,7 +132,7 @@ public class MutablePosition3(
      * @return this mutable position
      * @since 1.0.0
      */
-    public fun midpointAssign(other: Position3Like): MutablePosition3 =
+    public fun midpointAssign(other: Position3Like<*>): MutablePosition3 =
         set(
             x * 0.5 + other.x * 0.5,
             y * 0.5 + other.y * 0.5,
@@ -143,7 +149,7 @@ public class MutablePosition3(
      * @since 1.0.0
      */
     public fun lerpAssign(
-        other: Position3Like,
+        other: Position3Like<*>,
         progress: Double,
     ): MutablePosition3 {
         GeometryMath.requireFinite(progress, "Progress")
