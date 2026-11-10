@@ -26,6 +26,7 @@ include(
     ":reflection",
     ":configuration",
     ":geometry",
+    ":world",
     ":player",
     ":event",
     ":packet",
