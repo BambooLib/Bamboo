@@ -7,12 +7,8 @@ import org.junit.jupiter.api.Assertions.assertNotEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
 
 private class WorldPositionTest {
-    private val worldId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-    private val otherWorldId = UUID.fromString("00000000-0000-0000-0000-000000000002")
-
     @Test
     fun `constructs with expected properties`() {
         val position = WorldPosition(worldId, 10.0, 64.0, 20.0)
