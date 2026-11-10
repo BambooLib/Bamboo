@@ -59,7 +59,7 @@ public class MutableWorldLocation(
      * @since 1.0.0
      */
     public override var y: Double
-        get() = xCoordinate
+        get() = yCoordinate
         set(value) {
             WorldMath.requireFinite(value, "Y coordinate")
             yCoordinate = value
