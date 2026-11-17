@@ -1,6 +1,6 @@
 package io.github.deopping.bamboo.geometry.api
 
-import kotlin.math.hypot
+import io.github.deopping.bamboo.geometry.internal.math.CoordinateMath
 
 /**
  * Provides read-only access to three-dimensional integer block coordinates
@@ -40,12 +40,15 @@ public interface BlockPositionLike {
      * @return the squared distance
      * @since 1.0.0
      */
-    public fun distanceSquaredTo(other: BlockPositionLike): Double {
-        val dx = other.x.toDouble() - x
-        val dy = other.y.toDouble() - y
-        val dz = other.z.toDouble() - z
-        return dx * dx + dy * dy + dz * dz
-    }
+    public fun distanceSquaredTo(other: BlockPositionLike): Double =
+        CoordinateMath.distanceSquared(
+            x,
+            y,
+            z,
+            other.x,
+            other.y,
+            other.z,
+        )
 
     /**
      * Calculates the distance to another block position.
@@ -56,12 +59,15 @@ public interface BlockPositionLike {
      * @return the distance between position
      * @since 1.0.0
      */
-    public fun distanceTo(other: BlockPositionLike): Double {
-        val dx = other.x.toDouble() - x
-        val dy = other.y.toDouble() - y
-        val dz = other.z.toDouble() - z
-        return hypot(hypot(dx, dy), dz)
-    }
+    public fun distanceTo(other: BlockPositionLike): Double =
+        CoordinateMath.distance(
+            x,
+            y,
+            z,
+            other.x,
+            other.y,
+            other.z,
+        )
 
     /**
      * Calculates the midpoint between this block position and another.

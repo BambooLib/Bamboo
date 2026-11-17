@@ -1,8 +1,7 @@
 package io.github.deopping.bamboo.geometry.api
 
-import io.github.deopping.bamboo.geometry.internal.GeometryMath
-import kotlin.math.cos
-import kotlin.math.sin
+import io.github.deopping.bamboo.geometry.internal.math.RotationMath
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
 
 /**
  * Represents a mutable Minecraft-style rotation.
@@ -29,7 +28,7 @@ public class MutableRotation(
     public override var yaw: Double
         get() = yawValue
         set(value) {
-            GeometryMath.requireFinite(value, "Yaw")
+            NumberValidation.requireFinite(value, "Yaw")
 
             yawValue = value
             directionCache = null
@@ -42,22 +41,15 @@ public class MutableRotation(
     public override var pitch: Double
         get() = pitchValue
         set(value) {
-            require(value.isFinite() && value in -90.0..90.0) {
-                "Pitch must be finite and between -90 and 90 degrees."
-            }
+            NumberValidation.requireFiniteAndBetween(value, -90.0, 90.0, "Pitch")
 
             pitchValue = value
             directionCache = null
         }
 
     init {
-        require(yaw.isFinite()) {
-            "Yaw must be finite."
-        }
-
-        require(pitch.isFinite() && pitch in -90.0..90.0) {
-            "Pitch must be finite and between -90 and 90 degrees."
-        }
+        NumberValidation.requireFinite(yaw, "Yaw")
+        NumberValidation.requireFiniteAndBetween(pitch, -90.0, 90.0, "Pitch")
     }
 
     /**
@@ -74,13 +66,8 @@ public class MutableRotation(
         yaw: Double,
         pitch: Double,
     ): MutableRotation {
-        require(yaw.isFinite()) {
-            "Yaw must be finite."
-        }
-
-        require(pitch.isFinite() && pitch in -90.0..90.0) {
-            "Pitch must be finite and between -90 and 90 degrees."
-        }
+        NumberValidation.requireFinite(yaw, "Yaw")
+        NumberValidation.requireFiniteAndBetween(pitch, -90.0, 90.0, "Pitch")
 
         yawValue = yaw
         pitchValue = pitch
@@ -110,9 +97,8 @@ public class MutableRotation(
         yaw: Double,
         pitch: Double,
     ): MutableRotation {
-        require(yaw.isFinite() && pitch.isFinite()) {
-            "Rotation adjustments must be finite."
-        }
+        NumberValidation.requireFinite(yaw, "Yaw")
+        NumberValidation.requireFinite(pitch, "Pitch")
 
         return set(
             this.yaw + yaw,
@@ -127,7 +113,7 @@ public class MutableRotation(
      * @since 1.0.0
      */
     public fun normalize(): MutableRotation {
-        yaw = RotationLike.normalizeDegrees(yaw)
+        yaw = RotationMath.normalizeDegrees(yaw)
         return this
     }
 
@@ -147,17 +133,11 @@ public class MutableRotation(
         other: RotationLike,
         progress: Double,
     ): MutableRotation {
-        require(progress.isFinite() && progress in 0.0..1.0) {
-            "Progress must be finite and between zero and one."
-        }
-
-        val startYaw = RotationLike.normalizeDegrees(yaw)
-        val endYaw = RotationLike.normalizeDegrees(other.yaw)
-        val yawDifference = RotationLike.normalizeDegrees(endYaw - startYaw)
+        NumberValidation.requireFiniteAndBetween(progress, 0.0, 1.0, "Progress")
 
         return set(
-            yaw = RotationLike.normalizeDegrees(startYaw + yawDifference * progress),
-            pitch = this.pitch + (other.pitch - this.pitch) * progress,
+            yaw = RotationMath.interpolateYaw(yaw, other.yaw, progress),
+            pitch = pitch + (other.pitch - pitch) * progress,
         )
     }
 
@@ -172,17 +152,7 @@ public class MutableRotation(
     public override fun toDirection(): Vector3 {
         directionCache?.let { return it }
 
-        val yawRadians = Math.toRadians(yaw)
-        val pitchRadians = Math.toRadians(pitch)
-
-        val cosPitch = cos(pitchRadians)
-
-        val direction =
-            Vector3(
-                x = -sin(yawRadians) * cosPitch,
-                y = -sin(pitchRadians),
-                z = cos(yawRadians) * cosPitch,
-            )
+        val direction = RotationMath.toDirection(yaw, pitch)
 
         directionCache = direction
 

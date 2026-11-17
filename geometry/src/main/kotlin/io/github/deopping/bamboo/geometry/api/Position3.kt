@@ -1,6 +1,6 @@
 package io.github.deopping.bamboo.geometry.api
 
-import io.github.deopping.bamboo.geometry.internal.GeometryMath
+import io.github.deopping.bamboo.geometry.internal.validation.CoordinateValidation
 
 /**
  * Represents an immutable position in three-dimensional space.
@@ -17,7 +17,7 @@ public data class Position3(
     override val z: Double,
 ) : Position3Like<Position3> {
     init {
-        GeometryMath.requireFinite3(x, y, z, "coordinate")
+        CoordinateValidation.requireFinite(x, y, z, "coordinate")
     }
 
     override fun createPosition(

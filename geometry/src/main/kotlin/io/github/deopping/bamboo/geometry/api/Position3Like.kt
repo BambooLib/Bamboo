@@ -1,6 +1,7 @@
 package io.github.deopping.bamboo.geometry.api
 
-import kotlin.math.hypot
+import io.github.deopping.bamboo.geometry.internal.math.CoordinateMath
+import io.github.deopping.bamboo.geometry.internal.math.InterpolationMath
 
 /**
  * Provides read-only access to three-dimensional position coordinates
@@ -9,25 +10,7 @@ import kotlin.math.hypot
  * @author DeOpping
  * @since 1.0.0
  */
-public interface Position3Like<P : Position3Like<P>> {
-    /**
-     * Gets the X coordinate.
-     * @since 1.0.0
-     */
-    public val x: Double
-
-    /**
-     * Gets the Y coordinate.
-     * @since 1.0.0
-     */
-    public val y: Double
-
-    /**
-     * Gets the Z coordinate.
-     * @since 1.0.0
-     */
-    public val z: Double
-
+public interface Position3Like<P : Position3Like<P>> : Coordinate3Like {
     /**
      * Creates an immutable position with the specified coordinates.
      *
@@ -46,12 +29,7 @@ public interface Position3Like<P : Position3Like<P>> {
      * @return the squared distance
      * @since 1.0.0
      */
-    public fun distanceSquaredTo(other: Position3Like<*>): Double {
-        val dx = other.x - x
-        val dy = other.y - y
-        val dz = other.z - z
-        return dx * dx + dy * dy + dz * dz
-    }
+    public fun distanceSquaredTo(other: Position3Like<*>): Double = CoordinateMath.distanceSquared(this, other)
 
     /**
      * Calculates the distance to another position.
@@ -62,12 +40,7 @@ public interface Position3Like<P : Position3Like<P>> {
      * @return the distance between positions
      * @since 1.0.0
      */
-    public fun distanceTo(other: Position3Like<*>): Double {
-        val dx = other.x - x
-        val dy = other.y - y
-        val dz = other.z - z
-        return hypot(hypot(dx, dy), dz)
-    }
+    public fun distanceTo(other: Position3Like<*>): Double = CoordinateMath.distance(this, other)
 
     /**
      * Calculates the midpoint between this position and another position.
@@ -78,9 +51,9 @@ public interface Position3Like<P : Position3Like<P>> {
      */
     public fun midpoint(other: Position3Like<*>): P =
         createPosition(
-            x * 0.5 + other.x * 0.5,
-            y * 0.5 + other.y * 0.5,
-            z * 0.5 + other.z * 0.5,
+            InterpolationMath.midpoint(x, other.x),
+            InterpolationMath.midpoint(y, other.y),
+            InterpolationMath.midpoint(z, other.z),
         )
 
     /**
@@ -165,9 +138,9 @@ public interface Position3Like<P : Position3Like<P>> {
         }
 
         return createPosition(
-            x + (other.x - x) * progress,
-            y + (other.y - y) * progress,
-            z + (other.z - z) * progress,
+            InterpolationMath.lerp(x, other.x, progress),
+            InterpolationMath.lerp(y, other.y, progress),
+            InterpolationMath.lerp(z, other.z, progress),
         )
     }
 
