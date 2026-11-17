@@ -2,6 +2,7 @@ package io.github.deopping.bamboo.geometry.api
 
 import io.github.deopping.bamboo.geometry.internal.math.CoordinateMath
 import io.github.deopping.bamboo.geometry.internal.math.InterpolationMath
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
 
 /**
  * Provides read-only access to three-dimensional position coordinates
@@ -127,9 +128,7 @@ public interface Position3Like<P : Position3Like<P>> : Coordinate3Like {
         other: Position3Like<*>,
         progress: Double,
     ): P {
-        require(progress.isFinite()) {
-            "Progress must be finite."
-        }
+        NumberValidation.requireFinite(progress, "Progress")
 
         if (progress == 0.0) {
             return createPosition(x, y, z)

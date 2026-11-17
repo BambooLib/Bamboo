@@ -3,6 +3,7 @@ package io.github.deopping.bamboo.geometry.api
 import io.github.deopping.bamboo.geometry.internal.math.CoordinateMath
 import io.github.deopping.bamboo.geometry.internal.math.InterpolationMath
 import io.github.deopping.bamboo.geometry.internal.math.VectorMath
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
 
 /**
  * Provides read-only access to three-dimensional vector components
@@ -117,9 +118,7 @@ public interface Vector3Like : Coordinate3Like {
      * @since 1.0.0
      */
     public operator fun times(scalar: Double): Vector3 {
-        require(scalar.isFinite()) {
-            "Scalar must be finite."
-        }
+        NumberValidation.requireFinite(scalar, "Scalar")
 
         return Vector3(
             x * scalar,
@@ -137,9 +136,7 @@ public interface Vector3Like : Coordinate3Like {
      * @since 1.0.0
      */
     public operator fun div(scalar: Double): Vector3 {
-        require(scalar.isFinite() && scalar != 0.0) {
-            "Scalar must be finite and non-zero."
-        }
+        NumberValidation.requireFiniteNonZero(scalar, "Scalar")
 
         return Vector3(
             x / scalar,
@@ -173,9 +170,7 @@ public interface Vector3Like : Coordinate3Like {
         other: Vector3Like,
         progress: Double,
     ): Vector3 {
-        require(progress.isFinite()) {
-            "Progress must be finite."
-        }
+        NumberValidation.requireFinite(progress, "Progress")
 
         if (progress == 0.0) {
             return Vector3(x, y, z)
