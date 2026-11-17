@@ -1,6 +1,6 @@
 package io.github.deopping.bamboo.geometry.api
 
-import io.github.deopping.bamboo.geometry.internal.GeometryMath
+import io.github.deopping.bamboo.geometry.internal.math.BlockCoordinateMath
 
 /**
  * Represents an immutable block position in three-dimensional integer space.
@@ -52,9 +52,9 @@ public data class BlockPosition(
          */
         public fun fromPosition(position: Position3Like<*>): BlockPosition =
             BlockPosition(
-                GeometryMath.floorToInt(position.x, "X coordinate"),
-                GeometryMath.floorToInt(position.y, "Y coordinate"),
-                GeometryMath.floorToInt(position.z, "Z coordinate"),
+                BlockCoordinateMath.floorToInt(position.x, "X coordinate"),
+                BlockCoordinateMath.floorToInt(position.y, "Y coordinate"),
+                BlockCoordinateMath.floorToInt(position.z, "Z coordinate"),
             )
     }
 }

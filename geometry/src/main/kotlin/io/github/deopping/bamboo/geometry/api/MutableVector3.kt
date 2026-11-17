@@ -1,6 +1,10 @@
 package io.github.deopping.bamboo.geometry.api
 
-import io.github.deopping.bamboo.geometry.internal.GeometryMath
+import io.github.deopping.bamboo.geometry.internal.math.InterpolationMath
+import io.github.deopping.bamboo.geometry.internal.math.VectorMath
+import io.github.deopping.bamboo.geometry.internal.validation.CoordinateValidation
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
+import io.github.deopping.bamboo.geometry.internal.validation.VectorValidation
 import kotlin.math.abs
 import kotlin.math.hypot
 
@@ -34,7 +38,7 @@ public class MutableVector3(
     public override var x: Double
         get() = xComponent
         set(value) {
-            GeometryMath.requireFinite(value, "X component")
+            NumberValidation.requireFinite(value, "X coordinate")
             xComponent = value
         }
 
@@ -45,7 +49,7 @@ public class MutableVector3(
     public override var y: Double
         get() = yComponent
         set(value) {
-            GeometryMath.requireFinite(value, "Y component")
+            NumberValidation.requireFinite(value, "Y coordinate")
             yComponent = value
         }
 
@@ -56,12 +60,12 @@ public class MutableVector3(
     public override var z: Double
         get() = zComponent
         set(value) {
-            GeometryMath.requireFinite(value, "Z component")
+            NumberValidation.requireFinite(value, "Z coordinate")
             zComponent = value
         }
 
     init {
-        GeometryMath.requireFinite3(x, y, z, "component")
+        CoordinateValidation.requireFinite(x, y, z, "coordinate")
     }
 
     /**
@@ -80,7 +84,7 @@ public class MutableVector3(
         y: Double,
         z: Double,
     ): MutableVector3 {
-        GeometryMath.requireFinite3(x, y, z, "component")
+        CoordinateValidation.requireFinite(x, y, z, "coordinate")
 
         xComponent = x
         yComponent = y
@@ -133,9 +137,7 @@ public class MutableVector3(
      * @since 1.0.0
      */
     public operator fun timesAssign(scalar: Double) {
-        require(scalar.isFinite()) {
-            "Scalar must be finite."
-        }
+        NumberValidation.requireFinite(scalar, "Scalar")
 
         set(
             x * scalar,
@@ -152,9 +154,7 @@ public class MutableVector3(
      * @since 1.0.0
      */
     public operator fun divAssign(scalar: Double) {
-        require(scalar.isFinite() && scalar != 0.0) {
-            "Scalar must be finite and non-zero."
-        }
+        NumberValidation.requireFiniteNonZero(scalar, "Scalar")
 
         set(
             x / scalar,
@@ -175,35 +175,14 @@ public class MutableVector3(
         val currentY = y
         val currentZ = z
 
-        val scale =
-            GeometryMath.normalizationScale(
-                currentX,
-                currentY,
-                currentZ,
-            )
+        val scale = VectorMath.normalizationScale(currentX, currentY, currentZ)
         val inverseScale = 1.0 / scale
 
-        val scaledX: Double
-        val scaledY: Double
-        val scaledZ: Double
+        val scaledX = VectorMath.scaledComponent(currentX, scale, inverseScale)
+        val scaledY = VectorMath.scaledComponent(currentY, scale, inverseScale)
+        val scaledZ = VectorMath.scaledComponent(currentZ, scale, inverseScale)
 
-        if (inverseScale.isFinite()) {
-            scaledX = currentX * inverseScale
-            scaledY = currentY * inverseScale
-            scaledZ = currentZ * inverseScale
-        } else {
-            scaledX = currentX / scale
-            scaledY = currentY / scale
-            scaledZ = currentZ / scale
-        }
-
-        val inverseLength =
-            1.0 /
-                GeometryMath.scaledLength(
-                    scaledX,
-                    scaledY,
-                    scaledZ,
-                )
+        val inverseLength = VectorMath.inverseScaledLength(scaledX, scaledY, scaledZ)
 
         xComponent = scaledX * inverseLength
         yComponent = scaledY * inverseLength
@@ -230,7 +209,7 @@ public class MutableVector3(
         other: Vector3Like,
         progress: Double,
     ): MutableVector3 {
-        GeometryMath.requireFinite(progress, "Progress")
+        NumberValidation.requireFinite(progress, "Progress")
 
         if (progress == 0.0) {
             return this
@@ -239,9 +218,9 @@ public class MutableVector3(
         }
 
         return set(
-            x + (other.x - x) * progress,
-            y + (other.y - y) * progress,
-            z + (other.z - z) * progress,
+            InterpolationMath.lerp(x, other.x, progress),
+            InterpolationMath.lerp(y, other.y, progress),
+            InterpolationMath.lerp(z, other.z, progress),
         )
     }
 
@@ -277,9 +256,7 @@ public class MutableVector3(
      * @since 1.0.0
      */
     public fun setLength(length: Double): MutableVector3 {
-        require(length.isFinite() && length >= 0.0) {
-            "Length must be finite and non-negative."
-        }
+        NumberValidation.requireFiniteNonNegative(length, "Length")
 
         if (length == 0.0) {
             return set(0.0, 0.0, 0.0)
@@ -287,24 +264,35 @@ public class MutableVector3(
 
         val scale = maxOf(abs(x), abs(y), abs(z))
 
-        require(scale > 0.0) {
-            "Cannot set the length of a zero-length vector."
+        VectorValidation.requirePositiveScale(scale)
+
+        val scaleInverse = 1.0 / scale
+
+        val scaledX: Double
+        val scaledY: Double
+        val scaledZ: Double
+
+        if (scaleInverse.isFinite()) {
+            scaledX = x * scaleInverse
+            scaledY = y * scaleInverse
+            scaledZ = z * scaleInverse
+        } else {
+            scaledX = x / scale
+            scaledY = y / scale
+            scaledZ = z / scale
         }
 
-        val scaledX = x / scale
-        val scaledY = y / scale
-        val scaledZ = z / scale
-
-        val currentLength =
-            hypot(
-                hypot(scaledX, scaledY),
-                scaledZ,
-            )
+        val currentLengthInverse =
+            1.0 /
+                hypot(
+                    hypot(scaledX, scaledY),
+                    scaledZ,
+                )
 
         return set(
-            scaledX / currentLength * length,
-            scaledY / currentLength * length,
-            scaledZ / currentLength * length,
+            scaledX * currentLengthInverse * length,
+            scaledY * currentLengthInverse * length,
+            scaledZ * currentLengthInverse * length,
         )
     }
 

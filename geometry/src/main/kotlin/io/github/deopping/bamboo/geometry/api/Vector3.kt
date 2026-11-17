@@ -1,5 +1,7 @@
 package io.github.deopping.bamboo.geometry.api
 
+import io.github.deopping.bamboo.geometry.internal.validation.CoordinateValidation
+
 /**
  * Represents an immutable three-dimensional vector.
  *
@@ -15,17 +17,7 @@ public data class Vector3(
     override val z: Double,
 ) : Vector3Like {
     init {
-        require(x.isFinite()) {
-            "X component must be finite."
-        }
-
-        require(y.isFinite()) {
-            "Y component must be finite."
-        }
-
-        require(z.isFinite()) {
-            "Z component must be finite."
-        }
+        CoordinateValidation.requireFinite(x, y, z, "coordinate")
     }
 
     /**

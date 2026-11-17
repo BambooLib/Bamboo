@@ -1,6 +1,8 @@
 package io.github.deopping.bamboo.geometry.api
 
-import io.github.deopping.bamboo.geometry.internal.GeometryMath
+import io.github.deopping.bamboo.geometry.internal.math.InterpolationMath
+import io.github.deopping.bamboo.geometry.internal.validation.CoordinateValidation
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
 
 /**
  * Represents a mutable position in three-dimensional space.
@@ -26,7 +28,7 @@ public class MutablePosition3(
     public override var x: Double
         get() = xCoordinate
         set(value) {
-            GeometryMath.requireFinite(value, "X coordinate")
+            NumberValidation.requireFinite(value, "X coordinate")
             xCoordinate = value
         }
 
@@ -37,7 +39,7 @@ public class MutablePosition3(
     public override var y: Double
         get() = yCoordinate
         set(value) {
-            GeometryMath.requireFinite(value, "Y coordinate")
+            NumberValidation.requireFinite(value, "Y coordinate")
             yCoordinate = value
         }
 
@@ -48,12 +50,12 @@ public class MutablePosition3(
     public override var z: Double
         get() = zCoordinate
         set(value) {
-            GeometryMath.requireFinite(value, "Z coordinate")
+            NumberValidation.requireFinite(value, "Z coordinate")
             zCoordinate = value
         }
 
     init {
-        GeometryMath.requireFinite3(x, y, z, "coordinate")
+        CoordinateValidation.requireFinite(x, y, z, "coordinate")
     }
 
     override fun createPosition(
@@ -78,7 +80,7 @@ public class MutablePosition3(
         y: Double,
         z: Double,
     ): MutablePosition3 {
-        GeometryMath.requireFinite3(x, y, z, "coordinate")
+        CoordinateValidation.requireFinite(x, y, z, "coordinate")
 
         xCoordinate = x
         yCoordinate = y
@@ -134,9 +136,9 @@ public class MutablePosition3(
      */
     public fun midpointAssign(other: Position3Like<*>): MutablePosition3 =
         set(
-            x * 0.5 + other.x * 0.5,
-            y * 0.5 + other.y * 0.5,
-            z * 0.5 + other.z * 0.5,
+            InterpolationMath.midpoint(x, other.x),
+            InterpolationMath.midpoint(y, other.y),
+            InterpolationMath.midpoint(z, other.z),
         )
 
     /**
@@ -152,7 +154,7 @@ public class MutablePosition3(
         other: Position3Like<*>,
         progress: Double,
     ): MutablePosition3 {
-        GeometryMath.requireFinite(progress, "Progress")
+        NumberValidation.requireFinite(progress, "Progress")
 
         if (progress == 0.0) {
             return this
@@ -161,9 +163,9 @@ public class MutablePosition3(
         }
 
         return set(
-            x + (other.x - x) * progress,
-            y + (other.y - y) * progress,
-            z + (other.z - z) * progress,
+            InterpolationMath.lerp(x, other.x, progress),
+            InterpolationMath.lerp(y, other.y, progress),
+            InterpolationMath.lerp(z, other.z, progress),
         )
     }
 

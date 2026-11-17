@@ -1,10 +1,7 @@
 package io.github.deopping.bamboo.geometry.api
 
-import io.github.deopping.bamboo.geometry.internal.GeometryMath
-import kotlin.math.asin
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
+import io.github.deopping.bamboo.geometry.internal.math.RotationMath
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
 
 /**
  * Represents an immutable Minecraft-style rotation.
@@ -24,11 +21,8 @@ public data class Rotation(
     private var directionCache: Vector3? = null
 
     init {
-        GeometryMath.requireFinite(yaw, "Yaw")
-
-        require(pitch.isFinite() && pitch in -90.0..90.0) {
-            "Pitch must be finite and between -90 and 90 degrees."
-        }
+        NumberValidation.requireFinite(yaw, "Yaw")
+        NumberValidation.requireFiniteAndBetween(pitch, -90.0, 90.0, "Pitch")
     }
 
     /**
@@ -50,17 +44,7 @@ public data class Rotation(
     public override fun toDirection(): Vector3 {
         directionCache?.let { return it }
 
-        val yawRadians = Math.toRadians(yaw)
-        val pitchRadians = Math.toRadians(pitch)
-
-        val cosPitch = cos(pitchRadians)
-
-        val direction =
-            Vector3(
-                x = -sin(yawRadians) * cosPitch,
-                y = -sin(pitchRadians),
-                z = cos(yawRadians) * cosPitch,
-            )
+        val direction = RotationMath.toDirection(yaw, pitch)
 
         directionCache = direction
 
@@ -90,13 +74,6 @@ public data class Rotation(
          * @throws IllegalArgumentException if the direction has zero length
          * @since 1.0.0
          */
-        public fun fromDirection(direction: Vector3Like): Rotation {
-            val normalized = direction.normalized()
-
-            return Rotation(
-                yaw = Math.toDegrees(atan2(-normalized.x, normalized.z)),
-                pitch = Math.toDegrees(asin(-normalized.y.coerceIn(-1.0, 1.0))),
-            )
-        }
+        public fun fromDirection(direction: Vector3Like): Rotation = RotationMath.fromDirection(direction)
     }
 }

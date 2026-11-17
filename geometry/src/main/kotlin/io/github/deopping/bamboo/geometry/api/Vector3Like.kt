@@ -1,7 +1,9 @@
 package io.github.deopping.bamboo.geometry.api
 
-import io.github.deopping.bamboo.geometry.internal.GeometryMath
-import kotlin.math.hypot
+import io.github.deopping.bamboo.geometry.internal.math.CoordinateMath
+import io.github.deopping.bamboo.geometry.internal.math.InterpolationMath
+import io.github.deopping.bamboo.geometry.internal.math.VectorMath
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
 
 /**
  * Provides read-only access to three-dimensional vector components
@@ -10,25 +12,7 @@ import kotlin.math.hypot
  * @author DeOpping
  * @since 1.0.0
  */
-public interface Vector3Like {
-    /**
-     * Gets the X component.
-     * @since 1.0.0
-     */
-    public val x: Double
-
-    /**
-     * Gets the Y component.
-     * @since 1.0.0
-     */
-    public val y: Double
-
-    /**
-     * Gets the Z component.
-     * @since 1.0.0
-     */
-    public val z: Double
-
+public interface Vector3Like : Coordinate3Like {
     /**
      * Calculates the squared length of this vector.
      *
@@ -38,7 +22,7 @@ public interface Vector3Like {
      * @return the squared vector length
      * @since 1.0.0
      */
-    public fun lengthSquared(): Double = x * x + y * y + z * z
+    public fun lengthSquared(): Double = CoordinateMath.lengthSquared(this)
 
     /**
      * Calculates the length of this vector.
@@ -46,7 +30,7 @@ public interface Vector3Like {
      * @return the vector length
      * @since 1.0.0
      */
-    public fun length(): Double = hypot(hypot(x, y), z)
+    public fun length(): Double = CoordinateMath.length(this)
 
     /**
      * Calculates the dot product with another vector.
@@ -55,7 +39,7 @@ public interface Vector3Like {
      * @return the dot product
      * @since 1.0.0
      */
-    public fun dot(other: Vector3Like): Double = x * other.x + y * other.y + z * other.z
+    public fun dot(other: Vector3Like): Double = VectorMath.dot(this, other)
 
     /**
      * Calculates the cross product with another vector.
@@ -64,12 +48,7 @@ public interface Vector3Like {
      * @return the cross product in an immutable vector
      * @since 1.0.0
      */
-    public fun cross(other: Vector3Like): Vector3 =
-        Vector3(
-            y * other.z - z * other.y,
-            z * other.x - x * other.z,
-            x * other.y - y * other.x,
-        )
+    public fun cross(other: Vector3Like): Vector3 = VectorMath.cross(this, other)
 
     /**
      * Returns a normalized version of this vector.
@@ -86,35 +65,14 @@ public interface Vector3Like {
         val currentY = y
         val currentZ = z
 
-        val scale =
-            GeometryMath.normalizationScale(
-                currentX,
-                currentY,
-                currentZ,
-            )
+        val scale = VectorMath.normalizationScale(currentX, currentY, currentZ)
         val inverseScale = 1.0 / scale
 
-        val scaledX: Double
-        val scaledY: Double
-        val scaledZ: Double
+        val scaledX = VectorMath.scaledComponent(currentX, scale, inverseScale)
+        val scaledY = VectorMath.scaledComponent(currentY, scale, inverseScale)
+        val scaledZ = VectorMath.scaledComponent(currentZ, scale, inverseScale)
 
-        if (inverseScale.isFinite()) {
-            scaledX = currentX * inverseScale
-            scaledY = currentY * inverseScale
-            scaledZ = currentZ * inverseScale
-        } else {
-            scaledX = currentX / scale
-            scaledY = currentY / scale
-            scaledZ = currentZ / scale
-        }
-
-        val inverseLength =
-            1.0 /
-                GeometryMath.scaledLength(
-                    scaledX,
-                    scaledY,
-                    scaledZ,
-                )
+        val inverseLength = VectorMath.inverseScaledLength(scaledX, scaledY, scaledZ)
 
         return Vector3(
             scaledX * inverseLength,
@@ -160,9 +118,7 @@ public interface Vector3Like {
      * @since 1.0.0
      */
     public operator fun times(scalar: Double): Vector3 {
-        require(scalar.isFinite()) {
-            "Scalar must be finite."
-        }
+        NumberValidation.requireFinite(scalar, "Scalar")
 
         return Vector3(
             x * scalar,
@@ -180,9 +136,7 @@ public interface Vector3Like {
      * @since 1.0.0
      */
     public operator fun div(scalar: Double): Vector3 {
-        require(scalar.isFinite() && scalar != 0.0) {
-            "Scalar must be finite and non-zero."
-        }
+        NumberValidation.requireFiniteNonZero(scalar, "Scalar")
 
         return Vector3(
             x / scalar,
@@ -216,9 +170,7 @@ public interface Vector3Like {
         other: Vector3Like,
         progress: Double,
     ): Vector3 {
-        require(progress.isFinite()) {
-            "Progress must be finite."
-        }
+        NumberValidation.requireFinite(progress, "Progress")
 
         if (progress == 0.0) {
             return Vector3(x, y, z)
@@ -227,9 +179,9 @@ public interface Vector3Like {
         }
 
         return Vector3(
-            x + (other.x - x) * progress,
-            y + (other.y - y) * progress,
-            z + (other.z - z) * progress,
+            InterpolationMath.lerp(x, other.x, progress),
+            InterpolationMath.lerp(y, other.y, progress),
+            InterpolationMath.lerp(z, other.z, progress),
         )
     }
 

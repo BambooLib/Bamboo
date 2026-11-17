@@ -1,7 +1,7 @@
 package io.github.deopping.bamboo.geometry.api
 
-import kotlin.math.cos
-import kotlin.math.sin
+import io.github.deopping.bamboo.geometry.internal.math.RotationMath
+import io.github.deopping.bamboo.geometry.internal.validation.NumberValidation
 
 /**
  * Provides read-only access to yaw and pitch and common rotation operations.
@@ -36,18 +36,7 @@ public interface RotationLike {
      * @return the direction represented by this rotation
      * @since 1.0.0
      */
-    public fun toDirection(): Vector3 {
-        val yawRadians = Math.toRadians(yaw)
-        val pitchRadians = Math.toRadians(pitch)
-
-        val cosPitch = cos(pitchRadians)
-
-        return Vector3(
-            x = -sin(yawRadians) * cosPitch,
-            y = -sin(pitchRadians),
-            z = cos(yawRadians) * cosPitch,
-        )
-    }
+    public fun toDirection(): Vector3 = RotationMath.toDirection(yaw, pitch)
 
     /**
      * Returns a normalized version of this rotation.
@@ -60,7 +49,7 @@ public interface RotationLike {
      */
     public fun normalized(): Rotation =
         Rotation(
-            yaw = normalizeDegrees(yaw),
+            yaw = RotationMath.normalizeDegrees(yaw),
             pitch = pitch,
         )
 
@@ -81,16 +70,10 @@ public interface RotationLike {
         other: RotationLike,
         progress: Double,
     ): Rotation {
-        require(progress.isFinite() && progress in 0.0..1.0) {
-            "Progress must be finite and between zero and one."
-        }
-
-        val startYaw = normalizeDegrees(yaw)
-        val endYaw = normalizeDegrees(other.yaw)
-        val yawDifference = normalizeDegrees(endYaw - startYaw)
+        NumberValidation.requireFiniteAndBetween(progress, 0.0, 1.0, "Progress")
 
         return Rotation(
-            yaw = normalizeDegrees(startYaw + yawDifference * progress),
+            yaw = RotationMath.interpolateYaw(yaw, other.yaw, progress),
             pitch = pitch + (other.pitch - pitch) * progress,
         )
     }
@@ -103,12 +86,6 @@ public interface RotationLike {
          * @return the normalized angle
          * @since 1.0.0
          */
-        public fun normalizeDegrees(degrees: Double): Double {
-            require(degrees.isFinite()) {
-                "Angle must be finite."
-            }
-
-            return ((degrees % 360.0 + 540.0) % 360.0) - 180.0
-        }
+        public fun normalizeDegrees(degrees: Double): Double = RotationMath.normalizeDegrees(degrees)
     }
 }
